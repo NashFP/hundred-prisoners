@@ -1,7 +1,13 @@
-## basic
+## 1a basic
 
-`hundred_prisoners:carry_on({1, 1, false, [], 0}).`
+Slightly better than below because the first person in the room is the leader.
 
-## basic af
+```erlang
+hundred_prisoners:carry_on({1, 1, false, [], 0}).
+```
 
-`hundred_prisoners:carry_on({rand:uniform(100), 1, false, [], 0}).`
+## 1b basic af
+
+```erlang
+hundred_prisoners:carry_on({rand:uniform(100), 1, false, [], 0}).
+```
