@@ -17,3 +17,6 @@ First person in the room is chosen independently of the also randomly selected l
 ```erlang
 hundred_prisoners:carry_on({rand:uniform(100), 1, false, [], 0}).
 ```
+# Two
+
+Same solution. The leader is the second person to enter the room.

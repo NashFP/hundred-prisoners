@@ -1,4 +1,4 @@
--module(1).
+-module(hp1).
 -export([carry_on/1]).
 
 % State = {PrisonerID, Day, LightsOn, LightSwitchers, LeaderCount}
