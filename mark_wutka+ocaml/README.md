@@ -45,4 +45,13 @@ gets counted when the counter visits the room, and they have a 1/100 chance of b
 With multiple sub-counters, the prisoners get counted a little faster since any counter
 can count a prisoner, and then the master only has to count a few prisoners instead of 99.
 
+## Building
+To build, assuming you have OCaml installed:
+
+`make prisoner`
+
+To run:
+
+`prisoner`
+
 
