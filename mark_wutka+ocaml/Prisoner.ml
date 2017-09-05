@@ -27,6 +27,9 @@
  * or lit flags.
  *)
 
+module Prisoner =
+  struct
+
 type drone_state = { has_lit: bool; }
 type subcounter_state = { count: int; num_to_count: int; has_lit: bool }
 type counter_state = {count: int; num_to_count: int }
@@ -123,8 +126,6 @@ let rec make_subcounter ddc sdc drones_left ntc n =
     else
         (new_subcounter drones_left ddc sdc) :: make_subcounter ddc sdc 0 ntc (n-1);;
 
-Random.self_init();;
-
 (* Verify that everyone has visited *)
 let rec check_visited has_visited n =
     if n == 0 then
@@ -135,6 +136,7 @@ let rec check_visited has_visited n =
         false;;
 
 let warden num_prisoners =
+  Random.self_init();
     (* Initialize the state of the world *)
     let drone_day_count = 2000 in
     let subcounter_day_count = 2000 in
@@ -168,6 +170,6 @@ let warden num_prisoners =
 let run_test num_prisoners =
   match warden num_prisoners with
   | Released num -> Printf.printf "Prisoners were released after %d days\n" num
-  | Executed num -> Printf.printf "Prisoners were executed after %d days\n" num;;
+  | Executed num -> Printf.printf "Prisoners were executed after %d days\n" num;;                                  
 
-run_test 100;;                                 
+end;;
