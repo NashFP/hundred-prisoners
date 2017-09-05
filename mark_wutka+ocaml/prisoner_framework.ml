@@ -1,5 +1,9 @@
 type context = { has_lit: bool; count: int }
 
+type result =
+  | Released of int
+  | Executed of int
+                  
 (* What happens when a prisoner visits the room *)
 let visit_room prisoner days light context =
     (* do something and return the new value for light,
@@ -25,30 +29,34 @@ let rec make_contexts n =
     else
         make_context :: make_contexts (n-1);;
 
-let warden =
+let warden num_prisoners =
     (* Initialize the state of the world *)
-    let prisoners = Array.of_list (make_contexts 100) in
-    let has_visited = Array.make 100 false in
+    let prisoners = Array.of_list (make_contexts num_prisoners) in
+    let has_visited = Array.make num_prisoners false in
 
     let rec warden_loop day light  =
         (* Choose a random prisoner *)
-        let prisoner = Int32.to_int (Random.int32 (Int32.of_int 100)) in
+        let prisoner = Int32.to_int (Random.int32 (Int32.of_int num_prisoners)) in
 
         Array.set has_visited prisoner true;
 
         let prisoner_ctx = Array.get prisoners prisoner in
-        let (new_light, new_prisoner_ctx, asserted_100) =
+        let (new_light, new_prisoner_ctx, did_assert) =
             visit_room prisoner day light prisoner_ctx in
         Array.set prisoners prisoner new_prisoner_ctx;
 
         (* If the prisoner asserted that everyone has been there, check it *)
-        if asserted_100 then
-            (print_string "Asserted all 100 after "; print_int day; print_string " days\n";
+        if did_assert then
             if check_visited has_visited 100 then
-                print_string "Everyone goes free\n"
+                Released day
             else
-                print_string "Everyone dies\n")
+                Executed day
         else
             warden_loop (day+1) new_light
     in
-        warden_loop 0 false
+    warden_loop 0 false
+
+let run_test num_prisoners =
+  match warden num_prisoners with
+  | Released num -> Printf.printf "Prisoners were released after %d days\n" num
+  | Executed num -> Printf.printf "Prisoners were executed after %d days\n" num;;

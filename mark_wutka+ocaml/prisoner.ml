@@ -40,7 +40,12 @@ type context = {
     state: prisoner_state;
     drone_day_count: int;
     subcounter_day_count: int;
-}    
+  }
+
+type result = 
+  | Released of int
+  | Executed of int
+  
  
 (* What happens when a prisoner visits the room *)
 let visit_room prisoner days light context =
@@ -129,34 +134,40 @@ let rec check_visited has_visited n =
     else
         false;;
 
-let warden =
+let warden num_prisoners =
     (* Initialize the state of the world *)
     let drone_day_count = 2000 in
     let subcounter_day_count = 2000 in
-    let num_counters = 10 in
-    let num_drones = 99-num_counters in
-    let has_visited = Array.make 100 false in
+    let num_counters = num_prisoners / 10 in
+    let num_drones = num_prisoners-num_counters-1 in
+    let has_visited = Array.make num_prisoners false in
     let num_to_count = (num_drones + (num_counters - 1)) / num_counters in
     let prisoners = Array.of_list ((new_counter num_counters drone_day_count subcounter_day_count) ::
                       ((make_drones drone_day_count subcounter_day_count num_drones) @
                       (make_subcounter drone_day_count subcounter_day_count num_drones num_to_count num_counters))) in
     let rec warden_loop day light  =
         (* Choose a random prisoner *)
-        let prisoner = Int32.to_int (Random.int32 (Int32.of_int 100)) in
+        let prisoner = Int32.to_int (Random.int32 (Int32.of_int num_prisoners)) in
 
         Array.set has_visited prisoner true;
         let prisoner_ctx = Array.get prisoners prisoner in
-        let (new_light, new_prisoner_ctx, asserted_100) = visit_room prisoner day light prisoner_ctx in
+        let (new_light, new_prisoner_ctx, did_assert) = visit_room prisoner day light prisoner_ctx in
         Array.set prisoners prisoner new_prisoner_ctx;
 
         (* If the prisoner asserted that everyone has been there, check it *)
-        if asserted_100 then
-            (print_string "Asserted all 100 after "; print_int day; print_string " days\n";
-            if check_visited has_visited 99 then
-                print_string "Everyone goes free\n"
-            else
-                print_string "Everyone dies\n")
+        if did_assert then
+          if check_visited has_visited (num_prisoners-1) then
+            Released day
+          else
+            Executed day
         else
             warden_loop (day+1) new_light
     in
         warden_loop 0 false
+
+let run_test num_prisoners =
+  match warden num_prisoners with
+  | Released num -> Printf.printf "Prisoners were released after %d days\n" num
+  | Executed num -> Printf.printf "Prisoners were executed after %d days\n" num;;
+
+run_test 100;;                                 
